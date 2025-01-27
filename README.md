@@ -80,10 +80,25 @@ pnpm dev
 
 ### Endpoints
 - Main donation page: `https://your-domain/`
-- Stream overlay: `https://your-domain/overlay`
-- Voting overlay: `https://your-domain/voting-overlay`
+- Stream overlay: `https://your-domain/overlay.html`
+- Voting overlay: `https://your-domain/voting-overlay.html`
 - Stripe webhooks: `https://your-domain/stripe-webhooks`
 - Vote reset: `https://your-domain/api/votes/reset`
+
+## Stripe Webhook Configuration
+
+1. Go to the Stripe Dashboard
+2. Navigate to Developers > Webhooks
+3. Click "Add Endpoint"
+4. Enter your webhook URL: `https://your-domain/stripe-webhooks`
+5. Select event to listen to:
+   - `payment_intent.succeeded`
+6. Ensure your API version matches the one in your .env file
+7. After creating, you'll get a Webhook Signing Secrets
+8. Add them to .env
+
+_Note: Ensure your webhook endpoint is publicly accessible and uses HTTPS._
+
 
 ### 🔷 One-line Testing Commands
 

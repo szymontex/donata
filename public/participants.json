@@ -1,0 +1,78 @@
+{
+  "participants": [
+    {
+      "id": "1",
+      "name": "KXNP",
+      "description": "Rap/Trap",
+      "performanceTime": "22:20"
+    },
+    {
+      "id": "2",
+      "name": "Young Slash",
+      "description": "Cloud Rap",
+      "performanceTime": "22:30"
+    },
+    {
+      "id": "3",
+      "name": "Astral",
+      "description": "Alternative Rap",
+      "performanceTime": "22:40"
+    },
+    {
+      "id": "4",
+      "name": "Hellboy",
+      "description": "Trap Metal",
+      "performanceTime": "23:00"
+    },
+    {
+      "id": "5",
+      "name": "Nexo",
+      "description": "Drill",
+      "performanceTime": "23:10"
+    },
+    {
+      "id": "6",
+      "name": "Vibe",
+      "description": "Lo-fi Rap",
+      "performanceTime": "23:20"
+    },
+    {
+      "id": "7",
+      "name": "Storm",
+      "description": "Experimental",
+      "performanceTime": "23:30"
+    },
+    {
+      "id": "8",
+      "name": "Echo",
+      "description": "Wave",
+      "performanceTime": "23:50"
+    },
+    {
+      "id": "9",
+      "name": "Phantom",
+      "description": "Dark Trap",
+      "performanceTime": "00:00"
+    },
+    {
+      "id": "10",
+      "name": "Luna",
+      "description": "Ambient Rap",
+      "performanceTime": "00:10"
+    }
+  ],
+  "voteAmounts": {
+    "small": {
+      "name": "Small vote",
+      "amount": 5
+    },
+    "medium": {
+      "name": "Medium vote",
+      "amount": 10
+    },
+    "large": {
+      "name": "Large vote",
+      "amount": 50
+    }
+  }
+}

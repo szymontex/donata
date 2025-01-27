@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting Competition</title>
+    <link rel="stylesheet" href="/css/fonts.css">
+    <style>
+        :root {
+            --dark-blue: #101820;
+            --medium-blue: #243447;
+            --light-blue: #BACBDA;
+            --ultra-light-blue: #DBE2E6;
+            --green: #38D430;
+            --dark-green: #2CA926;
+            --ultra-dark-green: #217F1C;
+            --accent-yellow: #FFE817;
+        }
+
+        #voting-container {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1000px;
+            height: 200px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 70px;
+        }
+
+        .vote-column {
+            position: relative;
+            width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding-bottom: 80px;
+        }
+
+        .vote-bar {
+            width: 100%;
+            background: linear-gradient(180deg, 
+                rgba(56, 212, 48, 1) 0%,
+                rgba(44, 169, 38, 0.9) 100%);
+            border-radius: 8px;
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            bottom: 30px;
+            min-height: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .vote-column.winner .vote-bar {
+            background: linear-gradient(180deg, 
+                rgba(255, 232, 23, 1) 0%,
+                rgba(255, 232, 23, 0.9) 100%);
+            box-shadow: 0 0 20px rgba(255, 232, 23, 0.3);
+        }
+
+        .participant-name {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-32deg);
+            transform-origin: center;
+            font-family: 'Tactic Round', sans-serif;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--ultra-light-blue);
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000,
+                2px 2px 0 #000;
+            letter-spacing: 0.5px;
+        }
+
+        .participant-name.long-name {
+            font-size: 28px;
+            transform: translateX(-50%) rotate(-35deg);
+        }
+
+        #milestone-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 232, 23, 0.9);
+            color: var(--dark-blue);
+            padding: 20px 40px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .vote-count {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-32deg);
+            font-family: 'Tactic Round', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000,
+                2px 2px 0 #000;
+            z-index: 10;
+            white-space: nowrap;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .winner > .vote-count {
+            color: white;
+            text-shadow: 
+                -2px -2px 0 #000,
+                2px -2px 0 #000,
+                -2px 2px 0 #000,
+                2px 2px 0 #000,
+                0 0 8px rgba(255,255,255,0.3);
+            font-size: 26px;
+        }
+
+        .vote-count.large-number {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="voting-container"></div>
+    <div id="milestone-alert"></div>
+
+    <script>
+        let participantsData = null;
+        let previousVotes = {};
+
+        // Function to calculate points from amount
+        function calculatePoints(amount) {
+            const amountInPLN = amount / 100; // convert cents to PLN
+            if (amountInPLN >= 50) {
+                return amountInPLN * 3; // large vote = 3x points
+            } else if (amountInPLN >= 10) {
+                return amountInPLN * 2; // medium vote = 2x points
+            }
+            return amountInPLN; // small vote = 1x points
+        }
+
+        async function fetchParticipants() {
+            try {
+                const response = await fetch('/participants.json');
+                participantsData = await response.json();
+            } catch (error) {
+                console.error('Error fetching participants:', error);
+            }
+        }
+
+        function getParticipantName(id) {
+            if (!participantsData) return `Participant ${id}`;
+            const participant = participantsData.participants.find(p => p.id === id);
+            return participant ? participant.name : `Participant ${id}`;
+        }
+
+        function updateVotes(votes) {
+            if (!participantsData) return;
+
+            const container = document.getElementById('voting-container');
+            const pointsMap = {};
+
+            // Calculate points from votes
+            Object.entries(votes).forEach(([participantId, amount]) => {
+                pointsMap[participantId] = calculatePoints(amount);
+            });
+
+            const sortedVotes = Object.entries(pointsMap)
+                .sort(([, a], [, b]) => b - a);
+
+            if (sortedVotes.length === 0) {
+                container.innerHTML = '<div style="text-align: center;">No votes yet</div>';
+                return;
+            }
+
+            const maxPoints = Math.max(...Object.values(pointsMap));
+            container.innerHTML = '';
+
+            sortedVotes.forEach(([participantId, points], index) => {
+                const previousPoints = calculatePoints(previousVotes[participantId] || 0);
+                const wasLeader = Object.entries(previousVotes)
+                    .sort(([, a], [, b]) => calculatePoints(b) - calculatePoints(a))[0]?.[0] === participantId;
+                const isNowLeader = index === 0;
+
+                const percentage = (points / maxPoints) * 100;
+                
+                // Create column container
+                const column = document.createElement('div');
+                column.className = `vote-column ${isNowLeader ? 'winner' : ''}`;
+
+                // Create vote counter
+                const voteCount = document.createElement('div');
+                voteCount.className = 'vote-count';
+                if (points >= 1000) {
+                    voteCount.classList.add('large-number');
+                }
+                voteCount.textContent = Math.floor(points).toLocaleString();
+
+                // Create bar
+                const bar = document.createElement('div');
+                bar.className = 'vote-bar';
+                bar.style.height = `${Math.max(percentage, 5)}%`;
+
+                if (points > previousPoints) {
+                    bar.style.animation = 'newVote 0.5s ease';
+                }
+
+                // Create participant name
+                const name = document.createElement('div');
+                name.className = 'participant-name';
+                name.textContent = getParticipantName(participantId);
+
+                // Add all elements to column
+                column.appendChild(voteCount);
+                column.appendChild(bar);
+                column.appendChild(name);
+                container.appendChild(column);
+
+                if (!wasLeader && isNowLeader) {
+                    showMilestoneAlert(`${getParticipantName(participantId)} takes the lead!`);
+                }
+            });
+
+            previousVotes = {...votes};
+        }
+
+        function showMilestoneAlert(message) {
+            const alert = document.getElementById('milestone-alert');
+            alert.textContent = message;
+            alert.style.opacity = '1';
+            setTimeout(() => {
+                alert.style.opacity = '0';
+            }, 3000);
+        }
+
+        // Initialization
+        async function init() {
+            await fetchParticipants();
+            await fetchInitialVotes();
+            connectWebSocket();
+        }
+
+        async function fetchInitialVotes() {
+            try {
+                const response = await fetch('/api/votes');
+                const data = await response.json();
+                previousVotes = data.votes;
+                updateVotes(data.votes);
+            } catch (error) {
+                console.error('Error fetching initial votes:', error);
+            }
+        }
+
+        const connectWebSocket = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${protocol}//${window.location.host}`);
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'votes_update') {
+                        updateVotes(data.votes);
+                    }
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected. Reconnecting...');
+                setTimeout(connectWebSocket, 5000);
+            };
+        };
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Donations</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div class="header-section">
+        <div class="header-image">
+            <img src="images/header.png" alt="Header graphic" class="main-header-image">
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1>Donate to the stream and vote for a participant</h1>
+        
+        <form id="payment-form" class="tip-form">
+            <div class="input-group">
+                <label for="amount">Amount (USD)</label>
+                <input 
+                    type="number" 
+                    id="amount" 
+                    name="amount"
+                    min="5" 
+                    step="1" 
+                    placeholder="Enter amount or select participant below (min. 5 USD)"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="nickname">Your nickname</label>
+                <input 
+                    type="text" 
+                    id="nickname" 
+                    name="nickname"
+                    placeholder="What's your name?"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="message">Message (optional)</label>
+                <textarea 
+                    id="message" 
+                    name="message"
+                    rows="3"
+                    placeholder="Your message..."
+                ></textarea>
+            </div>
+
+            <h2>Vote for a participant</h2>
+            <div id="participants-grid" class="participants-grid"></div>
+            <div id="vote-amounts" class="vote-amounts" style="display: none;"></div>
+
+            <div id="error-message" class="error"></div>
+            <button type="submit" id="submit-button" class="submit-button">Support</button>
+        </form>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>

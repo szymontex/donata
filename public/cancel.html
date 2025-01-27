@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled - Stream Tips</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .cancel-container {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .cancel-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            fill: var(--light-blue);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: var(--green);
+            color: var(--dark-blue);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tip-form cancel-container">
+            <svg class="cancel-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+            </svg>
+            <h1>Payment Cancelled</h1>
+            <p>Your payment has been cancelled. You can try again.</p>
+            <a href="/" class="back-button">Back to homepage</a>
+        </div>
+    </div>
+</body>
+</html>

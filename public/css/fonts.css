@@ -1,0 +1,4 @@
+/* System font stack that provides good coverage across different operating systems */
+:root {
+    --system-fonts: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+}

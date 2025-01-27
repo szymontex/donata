@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Overlay</title>
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="https://cdn.streamelements.com/scripts/animate.min.css">
+    <style>
+        :root {
+            --alert-duration: 30s;
+            --progress-duration: calc(var(--alert-duration) - 1s);
+            --primary-color: #38D430;
+            --accent-color: #FFE817;
+            --bg-color: #101820;
+            --text-color: #DBE2E6;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+            font-family: 'Tactic Round', sans-serif;
+        }
+        body * {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            pointer-events: none;
+        }
+        #test-button {
+            user-select: auto;
+            -webkit-user-select: auto;
+            -moz-user-select: auto;
+            -ms-user-select: auto;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+        #alert-container {
+            position: fixed;
+            left: 50%;
+            top: 20%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 800px;
+            min-width: 320px;
+        }
+
+        .alert-box {
+            background: var(--bg-color);
+            border-radius: 12px;
+            overflow: hidden;
+            color: var(--text-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            transform: translateZ(0);
+            will-change: transform;
+            animation: fadeInDown 0.5s ease-out forwards, 
+                       fadeOutUp 0.5s ease-in forwards var(--progress-duration);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            width: 0;
+            animation: slideRight var(--progress-duration) linear forwards;
+            transform: translateZ(0);
+        }
+
+        .alert-content {
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            min-height: 120px;
+            max-width: 100%;
+        }
+
+        .icon-container {
+            background: #243447;
+            padding: 18px;
+            border-radius: 50%;
+            width: 84px;
+            height: 84px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotateIn 0.5s ease-out;
+            flex-shrink: 0;
+        }
+
+        .icon-container img {
+            width: 48px;
+            height: 48px;
+            animation: pulse 2s infinite;
+        }
+
+        .text-content {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            max-width: 100%;
+        }
+
+        .username {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            flex-shrink: 1;
+            min-width: 100px;
+        }
+
+        .participant-tag {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .participant-tag::before {
+            content: 'VOTE';
+            background: var(--bg-color);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        .donate-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-left: auto;
+            white-space: nowrap;
+        }
+
+        .message {
+            font-size: 20px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            color: var(--text-color);
+            max-width: 100%;
+        }
+
+        @keyframes slideRight {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 5px rgba(255, 232, 23, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(255, 232, 23, 0.6),
+                           0 0 35px rgba(255, 232, 23, 0.4); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            .alert-content {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .icon-container {
+                width: 60px;
+                height: 60px;
+                padding: 12px;
+            }
+
+            .icon-container img {
+                width: 36px;
+                height: 36px;
+            }
+
+            .username {
+                font-size: 24px;
+            }
+
+            .donate-amount {
+                font-size: 20px;
+            }
+
+            .message {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="alert-container"></div>
+
+    <script>
+        class AlertQueue {
+            constructor() {
+                this.queue = [];
+                this.isProcessing = false;
+                this.baseAlertDuration = 30000;
+                this.minAlertDuration = 10000;
+            }
+
+            add(alert) {
+                this.queue.push(alert);
+                if (!this.isProcessing) {
+                    this.processNext();
+                }
+            }
+
+            calculateDuration() {
+                const thresholds = [
+                    { queueSize: 15, duration: this.minAlertDuration },
+                    { queueSize: 10, divider: 1.5 },
+                    { queueSize: 5, divider: 1.5 },
+                    { queueSize: 3, divider: 2 }
+                ];
+
+                let duration = this.baseAlertDuration;
+
+                for (const threshold of thresholds) {
+                    if (this.queue.length >= threshold.queueSize) {
+                        if (threshold.duration) {
+                            return threshold.duration;
+                        }
+                        duration = Math.max(duration / threshold.divider, this.minAlertDuration);
+                    }
+                }
+
+                return duration;
+            }
+
+            async processNext() {
+                if (this.queue.length === 0) {
+                    this.isProcessing = false;
+                    return;
+                }
+
+                this.isProcessing = true;
+                const alert = this.queue.shift();
+                const duration = this.calculateDuration();
+
+                document.documentElement.style.setProperty('--alert-duration', duration/1000 + 's');
+                document.documentElement.style.setProperty('--progress-duration', (duration/1000 - 1) + 's');
+
+                await this.showAlert(alert, duration);
+                this.processNext();
+            }
+
+            async showAlert(data, duration) {
+                return new Promise(resolve => {
+                    const alertBox = document.createElement('div');
+                    alertBox.className = 'alert-box';
+                    
+                    const sanitizeHtml = (str) => {
+                        const div = document.createElement('div');
+                        div.textContent = str;
+                        return div.innerHTML;
+                    };
+
+                    let nickname, amount, message, participantName;
+
+                    if (data.metadata) {
+                        nickname = sanitizeHtml(data.metadata.nickname);
+                        amount = parseFloat(data.amount) / 100;
+                        message = data.metadata.message ? sanitizeHtml(data.metadata.message) : '';
+                        participantName = data.metadata.participantName ? sanitizeHtml(data.metadata.participantName) : '';
+                    } else {
+                        nickname = sanitizeHtml(data.nickname);
+                        amount = parseFloat(data.amount) / 100;
+                        message = data.message ? sanitizeHtml(data.message) : '';
+                        participantName = data.participantName ? sanitizeHtml(data.participantName) : '';
+                    }
+
+                    alertBox.innerHTML = `
+                        <div class="progress-bar"></div>
+                        <div class="alert-content">
+                            <div class="icon-container">
+                                <img src="/images/logo.svg" alt="Logo">
+                            </div>
+                            <div class="text-content">
+                                <div class="alert-header">
+                                    <span class="username">${nickname}</span>
+                                    ${participantName ? `<span class="participant-tag">for ${participantName}</span>` : ''}
+                                    <span class="donate-amount">${amount.toFixed(2)} PLN</span>
+                                </div>
+                                ${message ? `<div class="message">${message}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    const container = document.getElementById('alert-container');
+                    container.innerHTML = '';
+                    container.appendChild(alertBox);
+
+                    setTimeout(() => {
+                        if (alertBox && alertBox.parentNode) {
+                            alertBox.remove();
+                        }
+                        resolve();
+                    }, duration);
+                });
+            }
+        }
+
+        const alertQueue = new AlertQueue();
+
+        const connectWebSocket = () => {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${protocol}//${window.location.host}`);
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'donation') {
+                        alertQueue.add(data.donation);
+                    }
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected. Reconnecting...');
+                setTimeout(connectWebSocket, 5000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        };
+
+        connectWebSocket();
+
+        const testButton = document.createElement('button');
+        testButton.id = 'test-button';
+        testButton.innerHTML = 'Test Alert';
+        testButton.style = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 10px;';
+        testButton.onclick = () => {
+            for(let i = 1; i <= 3; i++) {
+                alertQueue.add({
+                    nickname: `TestUser${i}`,
+                    amount: 1500,
+                    message: `Test message #${i}!`,
+                    participantName: `${participantName}`
+                });
+            }
+        };
+        document.body.appendChild(testButton);
+    </script>
+</body>
+</html>

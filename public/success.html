@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmed - Stream Tips</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        .success-container {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 2rem;
+            fill: var(--green);
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: var(--green);
+            color: var(--dark-blue);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tip-form success-container">
+            <svg class="success-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <h1>Thank you for your support!</h1>
+            <p>Your payment has been successfully processed.</p>
+            <a href="/" class="back-button">Return to main page</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+body {
+    font-family: var(--system-fonts);
+    margin: 0;
+    padding: 0;
+    background: var(--dark-blue);
+    color: var(--ultra-light-blue);
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.tip-form {
+    background: var(--medium-blue);
+    padding: 1.5rem;  /* reduced padding */
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 100%;  /* added */
+    box-sizing: border-box; /* added */
+}
+
+h1, h2 {
+    color: var(--green);
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    width: 100%;  /* added */
+    box-sizing: border-box; /* added */
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--light-blue);
+    font-weight: 500;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--light-blue);
+    border-radius: 0.5rem;
+    background: var(--dark-blue);
+    color: var(--ultra-light-blue);
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box; /* added */
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+.participants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.participant-card {
+    background: var(--dark-blue);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.participant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(56, 212, 48, 0.2);
+}
+
+.participant-card.selected {
+    border: 2px solid var(--green);
+}
+
+.vote-amounts {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.vote-button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--dark-blue);
+    color: var(--ultra-light-blue);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vote-button:hover {
+    background: var(--green);
+}
+
+.vote-button.selected {
+    background: var(--green);
+    color: var(--dark-blue);
+}
+
+.submit-button {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: var(--accent-yellow);  /* changed from var(--green) */
+    color: var(--dark-blue);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.submit-button:hover {
+    background: #e6d115;  /* slightly darker yellow on hover */
+    transform: translateY(-2px);  /* added subtle lift effect */
+}
+
+.submit-button:active {
+    transform: translateY(0);  /* button returns to position on click */
+}
+
+.error {
+    color: #ff4444;
+    margin-top: 0.5rem;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    background: var(--accent-yellow);  /* changed from var(--green) */
+    color: var(--dark-blue);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.back-button:hover {
+    background: #e6d115;
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    transform: translateY(0);
+}
+
+.header-section {
+    width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.header-image {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.main-header-image {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+}
+
+/* Mobile device adjustments */
+@media (max-width: 640px) {
+    .header-section {
+        padding: 0.5rem;
+    }
+}

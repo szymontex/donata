@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  tips:
+    build: .
+    container_name: stripe
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - PORT=3000
